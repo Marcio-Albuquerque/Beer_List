@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Beer List</string>
     <string name="text_Teste">Hello Word</string>
+    <string name="text_Conection">No internet connection</string>
 </resources>
