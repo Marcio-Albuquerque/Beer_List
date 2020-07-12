@@ -2,5 +2,7 @@
     <string name="app_name">Beer List</string>
     <string name="text_Teste">Olá mundo</string>
     <string name="text_Conection">Sem conexão à internet</string>
+    <string name="action_favorite">Favoritos</string>
+    <string name="search_hint">Buscar cerveja ...</string>
 
 </resources>

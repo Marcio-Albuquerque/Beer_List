@@ -10,7 +10,7 @@
         android:id="@+id/imageView"
         android:layout_width="170dp"
         android:layout_height="100dp"
-        app:srcCompat="@drawable/ic_splash_screen"
+        app:srcCompat="@drawable/ic_connection"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -24,7 +24,6 @@
         android:text="@string/text_Conection"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:layout_constraintLeft_toLeftOf="parent"
-
         app:layout_constraintRight_toRightOf="parent"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="132dp" />
