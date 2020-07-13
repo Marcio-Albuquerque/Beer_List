@@ -3,6 +3,7 @@
     package="com.example.beerlist">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -11,11 +12,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Favorite"
-                  android:label="@string/action_favorite"
-            />
-        <activity android:name=".MainActivity"
-            />
+        <activity android:name=".BeerDetails"
+            android:label="@string/titleBeerDetails" />
+        <activity
+            android:name=".Favorite"
+            android:label="@string/action_favorite" />
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".SpashActivity"
             android:theme="@style/AppTheme.NoActionBar">

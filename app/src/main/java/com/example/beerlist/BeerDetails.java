@@ -8,16 +8,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Objects;
 
-public class Favorite extends AppCompatActivity {
+public class BeerDetails extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favorite);
+        setContentView(R.layout.activity_beer_details);
 
         //Back button in the title bar
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
     }
 
     //Action back
@@ -35,7 +34,4 @@ public class Favorite extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
-
-
-
 }

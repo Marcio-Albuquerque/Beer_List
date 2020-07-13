@@ -27,7 +27,7 @@ public class SpashActivity extends AppCompatActivity {
             Log.e("READ ASSESTS", "Error reading assets", e);
         }
 
-        // showing image
+        //Showing image
         ImageView imageView = findViewById(R.id.imageViewLogo);
         imageView.setImageBitmap(bitmap);
 
