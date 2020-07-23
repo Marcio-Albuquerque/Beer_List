@@ -60,17 +60,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void generateDataList(List<Beer> beerList) {
         List<String> nameList = new ArrayList<>();
-        List<String> taglineList = new ArrayList<>();
-        List<String> desDescripList = new ArrayList<>();
+
 
         for(Beer beer:beerList){
             nameList.add(beer.getName());
-            taglineList.add(beer.getTagline());
-            desDescripList.add(beer.getDescription());
         }
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerAdapter = new RecyclerAdapter(nameList, taglineList,desDescripList);
+        recyclerAdapter = new RecyclerAdapter(this,beerList,nameList);
         recyclerView.setAdapter(recyclerAdapter);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -96,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                recyclerAdapter.getFilter().filter(newText);
+                //Disabling search
+                //recyclerAdapter.getFilter().filter(newText);
 
                 return false;
             }

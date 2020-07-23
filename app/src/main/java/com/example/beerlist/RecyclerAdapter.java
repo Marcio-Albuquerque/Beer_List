@@ -1,7 +1,12 @@
 package com.example.beerlist;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,27 +18,39 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import punkapi.Beer;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> implements Filterable {
 
     List<String> nameList;
     List<String> nameListAll;
+    List<Beer> beerList;
 
-    List<String> taglineList;
+    Bitmap mBitmap;
+    int pos;
+    Context context;
 
-    List<String> desDescripList;
+
 
 
     //Constructor
-    public RecyclerAdapter(List<String> nameList, List<String> taglineList, List<String> desDescripList) {
+    public RecyclerAdapter(Context context,List<Beer> beerList, List<String> nameList) {
         this.nameList = nameList;
         nameListAll = new ArrayList<>();
         nameListAll.addAll(nameList);
-        this.taglineList = taglineList;
-        this.desDescripList = desDescripList;
+        this.beerList = beerList;
+        this.context=context;
 
     }
 
@@ -48,8 +65,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.textName.setText(nameList.get(position));
-        holder.textTagline.setText(taglineList.get(position));
+        pos = position;
+        Bitmap bitmap;
+        holder.textName.setText(beerList.get(position).getName());
+        holder.textTagline.setText(beerList.get(position).getTagline());
+
+        //Implementation of load image with the API (https://github.com/bumptech/glide)
+        Glide.with(context)
+                .load(beerList.get(position).getImageUrl())
+                .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
+                .into(holder.imageView);
+
     }
 
     @Override
@@ -104,7 +130,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView imageView;
         TextView textName,textTagline;
@@ -115,6 +141,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             imageView = itemView.findViewById(R.id.imageView);
             textName = itemView.findViewById(R.id.textName);
             textTagline = itemView.findViewById(R.id.textTagline);
+
 
             itemView.setOnClickListener(this);
 
@@ -128,6 +155,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             context.startActivity(intent);
         }
     }
+
+
 }
 
 
