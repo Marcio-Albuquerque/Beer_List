@@ -25,7 +25,7 @@ public class Beer {
     private String imageUrl;
 
     //Favorite flag
-    private boolean isFavourite;
+    private boolean isFavourite = false;
 
     public Integer getId() {
         return id;

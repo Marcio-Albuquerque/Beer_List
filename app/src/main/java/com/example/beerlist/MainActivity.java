@@ -35,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
         //Condition for changing the layout.xml
         if (isNetworkAvailable()){
             setContentView(R.layout.activity_main);
+
+            recyclerView = findViewById(R.id.recyclerView);
+            recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+
             /*Create handle for the RetrofitInstance interface*/
             PunkAPIService service = ControlBeerList.getPunkAPIClient();
 
@@ -66,12 +71,11 @@ public class MainActivity extends AppCompatActivity {
             nameList.add(beer.getName());
         }
 
-        recyclerView = findViewById(R.id.recyclerView);
+
         recyclerAdapter = new RecyclerAdapter(this,beerList,nameList);
         recyclerView.setAdapter(recyclerAdapter);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+
 
     }
 

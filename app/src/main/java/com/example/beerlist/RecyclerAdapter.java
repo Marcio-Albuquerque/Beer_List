@@ -9,11 +9,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,12 +40,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     List<String> nameListAll;
     List<Beer> beerList;
 
-    Bitmap mBitmap;
-    int pos;
     Context context;
-
-
-
+    private static int pos;
 
     //Constructor
     public RecyclerAdapter(Context context,List<Beer> beerList, List<String> nameList) {
@@ -64,17 +63,39 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        pos = position;
-        Bitmap bitmap;
-        holder.textName.setText(beerList.get(position).getName());
-        holder.textTagline.setText(beerList.get(position).getTagline());
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
+        Beer itemBeer = beerList.get(position);
+
+        holder.textName.setText(itemBeer.getName());
+        holder.textTagline.setText(itemBeer.getTagline());
 
         //Implementation of load image with the API (https://github.com/bumptech/glide)
         Glide.with(context)
-                .load(beerList.get(position).getImageUrl())
+                .load(itemBeer.getImageUrl())
                 .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
                 .into(holder.imageView);
+
+        /* TODO: Star implementation favorite problem in set correct position
+        holder.imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //Toast.makeText(context, beerList.get(position).getName(), Toast.LENGTH_SHORT).show();
+                if(itemBeer.getIsFavourite()) {
+                    view.setBackgroundResource(R.drawable.staroff);
+                    itemBeer.setFavourite(false);
+                 //   Toast.makeText(context, beerList.get(position).getName(), Toast.LENGTH_SHORT).show();
+                }else {
+                    view.setBackgroundResource(R.drawable.staron);
+                    itemBeer.setFavourite(true);
+                    //Toast.makeText(context, beerList.get(position).getName(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+         */
 
     }
 
@@ -83,7 +104,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return nameList.size();
     }
 
-    //Only change for name is not change Tagline
+    //TODO: implementation seach
     @Override
     public Filter getFilter() {
 
@@ -130,10 +151,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
+     class ViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+        ImageButton imageButton;
         ImageView imageView;
         TextView textName,textTagline;
+        boolean isPlay = false;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -141,19 +163,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             imageView = itemView.findViewById(R.id.imageView);
             textName = itemView.findViewById(R.id.textName);
             textTagline = itemView.findViewById(R.id.textTagline);
-
+            imageButton = itemView.findViewById(R.id.imageButtonFavorite);
 
             itemView.setOnClickListener(this);
-
         }
 
         @Override
         public void onClick(View view) {
-            //Toast.makeText(view.getContext(), nameList.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
-            final Intent intent = new Intent(view.getContext(),BeerDetails.class);
-            Context context = view.getContext();
+            //Toast.makeText(view.getContext(), beerList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+            final Intent intent = new Intent(context,BeerDetails.class);
+            intent.putExtra("NAME_BEER", beerList.get(getAdapterPosition()).getName());
+            intent.putExtra("TAGLINE_BEER", beerList.get(getAdapterPosition()).getTagline());
+            intent.putExtra("DESCRIPTION_BEER", beerList.get(getAdapterPosition()).getDescription());
+            intent.putExtra("IMAGEURL_BEER", beerList.get(getAdapterPosition()).getImageUrl());
             context.startActivity(intent);
         }
+
+
     }
 
 
