@@ -7,7 +7,6 @@
     <string name="titleBeerDetails">Detalhes da cerveja</string>
     <string name="stringToastAdd">Adicionado aos Favoritos</string>
     <string name="stringToastRemove">Removido dos Favoritos</string>
-
-
+    <string name="stringReturnSearch">Busca não encontrada</string>
 
 </resources>

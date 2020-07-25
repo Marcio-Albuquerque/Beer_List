@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
@@ -90,11 +91,7 @@ public class Favorite extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                //Reload Intent for updated list remove
-                Intent intent = new Intent(this, MainActivity.class);
-                NavUtils.navigateUpTo(this, intent);
-                finish();
-                return true;
+                onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
@@ -104,4 +101,15 @@ public class Favorite extends AppCompatActivity {
         return true;
     }
 
+    //Action back
+    @Override
+    public void onBackPressed() {
+
+        //setResult(RESULT_OK);
+        Intent intent = new Intent(this, MainActivity.class);
+        NavUtils.navigateUpTo(this, intent);
+        finish();
+
+        super.onBackPressed();
+    }
 }

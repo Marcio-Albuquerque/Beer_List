@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -34,6 +36,10 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private RecyclerAdapter mAdapter;
+    private ProgressBar progressBar;
+
+    private boolean flag_status_list = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         //Condition for changing the layout.xml
         if (isNetworkAvailable()){
             setContentView(R.layout.activity_main);
+            progressBar = findViewById(R.id.progressbar);
+            initViews();
 
             //Create handle for the RetrofitInstance interface
             PunkAPIService service = ControlBeerList.getPunkAPIClient();
@@ -66,15 +74,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void generateDataList(ArrayList<Beer> beerList) {
-
+    private void initViews(){
         //Connects the application to the layout and configuration and add data to the RecyclerAdapter
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new RecyclerAdapter(this, beerList));
+    }
 
+    private void generateDataList(ArrayList<Beer> beerList) {
+
+        mAdapter = new RecyclerAdapter(this, beerList);
+        progressBar.setVisibility(View.GONE);
+        flag_status_list = true;
+        recyclerView.setAdapter(mAdapter);
     }
 
 
@@ -98,9 +111,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Disabling search
-                //recyclerAdapter.getFilter().filter(newText);
+                if(flag_status_list){
+                    mAdapter.getFilter().filter(newText);
+                    return true;
+                }else{
+                    return false;
+                }
 
-                return false;
             }
         });
         return super.onCreateOptionsMenu(menu);
@@ -120,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_search:
                 //Check connection
-                if (!isNetworkAvailable()){
-                    setContentView(R.layout.layout_no_connection);
+                if (!isNetworkAvailable()&&flag_status_list){
+                      setContentView(R.layout.layout_no_connection);
                 }
 
 

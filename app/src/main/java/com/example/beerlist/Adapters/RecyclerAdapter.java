@@ -1,10 +1,12 @@
 package com.example.beerlist.Adapters;
 
+import android.app.MediaRouteButton;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +15,8 @@ import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,120 +40,121 @@ import punkapi.Beer;
  * Class with the Adaptive Beer of the API
  */
 
-//public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> implements Filterable {
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> implements Filterable {
 
     private ArrayList<Beer> beerList;
     private FavDB favDB;
+    private ArrayList<Beer> mFilteredbeerList;
     Context context;
+
 
     //Constructor
     public RecyclerAdapter(Context context,ArrayList<Beer> beerList) {
         this.context=context;
         this.beerList = beerList;
+        this.mFilteredbeerList = beerList;
+
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder( ViewGroup parent, int viewType) {
-        favDB = new FavDB(context);
-        //Create table on first
-        SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        boolean firstStart = prefs.getBoolean("firstStart", true);
-        if (firstStart) {
-            createTableOnFirstStart();
-        }
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = layoutInflater.inflate(R.layout.row_item, parent, false);
-        return new ViewHolder(view);
+            favDB = new FavDB(context);
+            //Create table on first
+            SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            boolean firstStart = prefs.getBoolean("firstStart", true);
+            if (firstStart) {
+                createTableOnFirstStart();
+            }
+
+            View view = layoutInflater.inflate(R.layout.row_item, parent, false);
+
+            return new ViewHolder(view);
+
     }
-
-
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-        final Beer itemBeer = beerList.get(position);
+            final Beer itemBeer = mFilteredbeerList.get(position);
+            //Read list data for check os favorites item
+            readCursorData(itemBeer,holder);
 
-        //Read list data for check os favorites item
-        readCursorData(itemBeer,holder);
+            holder.textName.setText(itemBeer.getName());
+            holder.textTagline.setText(itemBeer.getTagline());
 
-        holder.textName.setText(itemBeer.getName());
-        holder.textTagline.setText(itemBeer.getTagline());
+            //Implementation of load image with the API (https://github.com/bumptech/glide)
+            Glide.with(context)
+                    .load(itemBeer.getImageUrl())
+                    .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
+                    .into(holder.imageView);
 
-        //Implementation of load image with the API (https://github.com/bumptech/glide)
-        Glide.with(context)
-                .load(itemBeer.getImageUrl())
-                .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
-                .into(holder.imageView);
+            //Fix bug RecyclerView adapter showing wrong images in button when use Filter
+            holder.setIsRecyclable(false);
 
     }
 
-
     @Override
     public int getItemCount() {
-        return beerList.size();
+        return mFilteredbeerList.size();
     }
 
     //Bug fix RecyclerView adapter showing wrong images in button
     @Override
     public int getItemViewType(int position) {
-        return position;
+       return position;
     }
 
     //Bug fix RecyclerView adapter showing wrong images in button
     @Override
     public long getItemId(int position) {
+
         return position;
     }
 
-    //TODO: implementation seach
-    /*
-    @Override
     public Filter getFilter() {
 
-        return myFilter;
-    }
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
 
-    Filter myFilter = new Filter() {
+                String charString = charSequence.toString();
 
-        //Automatic on background thread
-        @Override
-        protected FilterResults performFiltering(CharSequence charSequence) {
+                if (charString.isEmpty()) {
+                    mFilteredbeerList = beerList;
+                } else {
 
-            List<String> filteredList = new ArrayList<>();
+                    ArrayList<Beer> filteredList = new ArrayList<>();
 
+                    for (Beer beerItem : beerList) {
 
-            if (charSequence == null || charSequence.length() == 0) {
-                filteredList.addAll(nameListAll);
-
-            } else {
-                for (String movie: nameListAll) {
-                    if (movie.toLowerCase().contains(charSequence.toString().toLowerCase())) {
-                        filteredList.add(movie);
-
+                        if (beerItem.getName().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(beerItem);
+                        }
                     }
+
+                    mFilteredbeerList = filteredList;
                 }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mFilteredbeerList;
+                if(mFilteredbeerList.size()==0){
+                    Toast toast = Toast.makeText(context, context.getString(R.string.stringReturnSearch), Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                return filterResults;
             }
 
-            FilterResults filterResults = new FilterResults();
-
-            filterResults.values = filteredList;
-
-            return filterResults;
-        }
-
-        //Automatic on UI thread
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            nameList.clear();
-            nameList.addAll((Collection<? extends String>) filterResults.values);
-            notifyDataSetChanged();
-
-        }
-    };
-    */
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mFilteredbeerList = (ArrayList<Beer>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 
      class ViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         Button favBtn;
@@ -164,13 +169,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             textTagline = itemView.findViewById(R.id.textTagline);
             favBtn = itemView.findViewById(R.id.imageButtonFavorite);
 
+
             //Button to favorite list item
             favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
 
-                    Beer itemBeer = beerList.get(position);
+                    Beer itemBeer = mFilteredbeerList.get(position);
                     //Check status Favorite
                     if (itemBeer.getIsFavourite().equals("0")){
                         itemBeer.setFavourite("1");
@@ -184,7 +190,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                         //Change background Button
                         favBtn.setBackgroundResource(R.drawable.staron);
                         favBtn.setSelected(true);
-                        Toast.makeText(view.getContext(), context.getString(R.string.stringToastAdd) + ": \n" + beerList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), context.getString(R.string.stringToastAdd) + ": \n" + mFilteredbeerList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
                     }else {
                         //Remove information in database
                         itemBeer.setFavourite("0");
@@ -192,7 +198,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                         //Change background Button
                         favBtn.setBackgroundResource(R.drawable.staroff);
                         favBtn.setSelected(false);
-                        Toast.makeText(view.getContext(), context.getString(R.string.stringToastRemove) + ": \n" + beerList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), context.getString(R.string.stringToastRemove) + ": \n" + mFilteredbeerList.get(getAdapterPosition()).getName(), Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -205,10 +211,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         public void onClick(View view) {
             //Send information to the Activity BeerDetails
             final Intent intent = new Intent(context, BeerDetails.class);
-            intent.putExtra("NAME_BEER", beerList.get(getAdapterPosition()).getName());
-            intent.putExtra("TAGLINE_BEER", beerList.get(getAdapterPosition()).getTagline());
-            intent.putExtra("DESCRIPTION_BEER", beerList.get(getAdapterPosition()).getDescription());
-            intent.putExtra("IMAGEURL_BEER", beerList.get(getAdapterPosition()).getImageUrl());
+            intent.putExtra("NAME_BEER", mFilteredbeerList.get(getAdapterPosition()).getName());
+            intent.putExtra("TAGLINE_BEER", mFilteredbeerList.get(getAdapterPosition()).getTagline());
+            intent.putExtra("DESCRIPTION_BEER", mFilteredbeerList.get(getAdapterPosition()).getDescription());
+            intent.putExtra("IMAGEURL_BEER", mFilteredbeerList.get(getAdapterPosition()).getImageUrl());
             context.startActivity(intent);
         }
 

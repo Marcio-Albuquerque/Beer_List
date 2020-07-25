@@ -8,6 +8,6 @@
     <string name="titleBeerDetails">Beer details</string>
     <string name="stringToastAdd">Added to Favorites</string>
     <string name="stringToastRemove">Removed from Favorites</string>
-
+    <string name="stringReturnSearch">Search not found</string>
 
 </resources>
