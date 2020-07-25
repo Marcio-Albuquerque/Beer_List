@@ -5,5 +5,9 @@
     <string name="action_favorite">Favoritos</string>
     <string name="search_hint">Buscar cerveja ...</string>
     <string name="titleBeerDetails">Detalhes da cerveja</string>
+    <string name="stringToastAdd">Adicionado aos Favoritos</string>
+    <string name="stringToastRemove">Removido dos Favoritos</string>
+
+
 
 </resources>

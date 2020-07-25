@@ -12,14 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".BeerDetails"
+        <activity android:name=".Activities.BeerDetails"
+            android:screenOrientation="portrait"
             android:label="@string/titleBeerDetails" />
         <activity
-            android:name=".Favorite"
+            android:name=".Activities.Favorite"
+            android:screenOrientation="portrait"
             android:label="@string/action_favorite" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Activities.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
-            android:name=".SpashActivity"
+            android:name=".Activities.SpashActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

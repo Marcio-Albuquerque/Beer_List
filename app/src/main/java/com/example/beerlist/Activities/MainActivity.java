@@ -1,4 +1,4 @@
-package com.example.beerlist;
+package com.example.beerlist.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,11 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.beerlist.Adapters.RecyclerAdapter;
+import com.example.beerlist.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +27,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/*
+ * Class that communicates with API and shows in the adaptive list
+ */
+
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView recyclerView;
-    RecyclerAdapter recyclerAdapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,18 +43,14 @@ public class MainActivity extends AppCompatActivity {
         if (isNetworkAvailable()){
             setContentView(R.layout.activity_main);
 
-            recyclerView = findViewById(R.id.recyclerView);
-            recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-
-            /*Create handle for the RetrofitInstance interface*/
+            //Create handle for the RetrofitInstance interface
             PunkAPIService service = ControlBeerList.getPunkAPIClient();
 
             Call <List<Beer>> call = service.getAllBeer();
             call.enqueue(new Callback<List<Beer>>() {
                 @Override
                 public void onResponse(Call<List<Beer>> call, Response<List<Beer>> response) {
-                    generateDataList(response.body());
+                    generateDataList((ArrayList<Beer>) response.body());
                 }
 
                 @Override
@@ -63,22 +66,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void generateDataList(List<Beer> beerList) {
-        List<String> nameList = new ArrayList<>();
+    private void generateDataList(ArrayList<Beer> beerList) {
 
-
-        for(Beer beer:beerList){
-            nameList.add(beer.getName());
-        }
-
-
-        recyclerAdapter = new RecyclerAdapter(this,beerList,nameList);
-        recyclerView.setAdapter(recyclerAdapter);
-
-
+        //Connects the application to the layout and configuration and add data to the RecyclerAdapter
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new RecyclerAdapter(this, beerList));
 
     }
 
+
+    //Creating the menu on the ActionBar and configure search
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
 
@@ -106,20 +106,19 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    //Action of the click the menu on the ActionBar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
 
             case R.id.action_favorite:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                Intent intent = new Intent(MainActivity.this,Favorite.class);
+                // User chose the "Favorite" action, mark the current item change Activity
+                Intent intent = new Intent(MainActivity.this, Favorite.class);
                 startActivity(intent);
                 return true;
 
             case R.id.action_search:
-
                 //Check connection
                 if (!isNetworkAvailable()){
                     setContentView(R.layout.layout_no_connection);
@@ -128,8 +127,6 @@ public class MainActivity extends AppCompatActivity {
 
             default:
 
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
         }
@@ -145,6 +142,4 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
-
 }

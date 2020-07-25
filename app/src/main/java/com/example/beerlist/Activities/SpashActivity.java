@@ -1,4 +1,4 @@
-package com.example.beerlist;
+package com.example.beerlist.Activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,8 +10,13 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.beerlist.R;
+
 import java.io.IOException;
 
+/*
+* Starting class
+*/
 public class SpashActivity extends AppCompatActivity {
 
     @Override
@@ -37,7 +42,7 @@ public class SpashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 //Change Activity
-                Intent intent = new Intent(SpashActivity.this,MainActivity.class);
+                Intent intent = new Intent(SpashActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }

@@ -10,7 +10,7 @@ public class Beer {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -25,13 +25,13 @@ public class Beer {
     private String imageUrl;
 
     //Favorite flag
-    private boolean isFavourite = false;
+    private String isFavourite = "0";
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -66,9 +66,9 @@ public class Beer {
         this.imageUrl = imageUrl;
     }
 
-    public Boolean getIsFavourite(){return isFavourite;}
+    public String getIsFavourite(){return isFavourite;}
 
-    public void setFavourite(boolean favourite) {
+    public void setFavourite(String favourite) {
         isFavourite = favourite;
     }
 }

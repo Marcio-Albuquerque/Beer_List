@@ -5,17 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorSecondary"
-    tools:context=".BeerDetails">
-
+    tools:context=".Activities.BeerDetails">
 
 
     <ImageView
         android:id="@+id/imageViewBeerDetail"
         android:layout_width="120dp"
         android:layout_height="150dp"
-        app:srcCompat="@drawable/placeholder"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/placeholder" />
 
     <TextView
         android:id="@+id/textNameBeerDetail"
