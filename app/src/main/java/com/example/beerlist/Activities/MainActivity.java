@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerAdapter mAdapter;
     private ProgressBar progressBar;
+    private TextView textViewFeedback;
+    private ImageView imageViewFeedback;
 
     private boolean flag_status_list = false;
 
@@ -49,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         if (isNetworkAvailable()){
             setContentView(R.layout.activity_main);
             progressBar = findViewById(R.id.progressbar);
+            imageViewFeedback = findViewById(R.id.imageViewSearchFeedback);
+            textViewFeedback = findViewById(R.id.textViewFeedBack);
+
             initViews();
 
             //Create handle for the RetrofitInstance interface
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onFailure(Call<List<Beer>> call, Throwable t) {
                 }
             });
+
 
 
         }else{
@@ -110,9 +118,34 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Disabling search
-                if(flag_status_list){
+                 if(flag_status_list){
                     mAdapter.getFilter().filter(newText);
+                    //Check the list after search
+                    mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+
+                        @Override
+                        public void onChanged() {
+                            super.onChanged();
+                            checkEmpty();
+                        }
+
+                        @Override
+                        public void onItemRangeInserted(int positionStart, int itemCount) {
+                            super.onItemRangeInserted(positionStart, itemCount);
+                            checkEmpty();
+                        }
+
+                        @Override
+                        public void onItemRangeRemoved(int positionStart, int itemCount) {
+                            super.onItemRangeRemoved(positionStart, itemCount);
+                            checkEmpty();
+                        }
+
+                        void checkEmpty() {
+                            imageViewFeedback.setVisibility(mAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+                            textViewFeedback.setVisibility(mAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+                        }
+                    });
                     return true;
                 }else{
                     return false;
