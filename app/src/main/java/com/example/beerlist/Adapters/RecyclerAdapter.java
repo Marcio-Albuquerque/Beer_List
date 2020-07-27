@@ -43,8 +43,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private ArrayList<Beer> mFilteredbeerList;
     Context context;
 
-    private boolean Flag_true = true;
-
 
     //Constructor
     public RecyclerAdapter(Context context,ArrayList<Beer> beerList) {
@@ -60,51 +58,40 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-            favDB = new FavDB(context);
-            //Create table on first
-            SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        favDB = new FavDB(context);
+        //Create table on first
+        SharedPreferences prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
 
-            boolean firstStart = prefs.getBoolean("firstStart", true);
-            if (firstStart) {
-                createTableOnFirstStart();
-            }
+        boolean firstStart = prefs.getBoolean("firstStart", true);
+        if (firstStart) {
+            createTableOnFirstStart();
+        }
 
-            if(Flag_true){
-                LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                View view = layoutInflater.inflate(R.layout.row_item, parent, false);
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        View view = layoutInflater.inflate(R.layout.row_item, parent, false);
 
-                return new ViewHolder(view);
-            }else{
-                LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                View view = layoutInflater.inflate(R.layout.layout_no_connection, parent, false);
-
-                return new ViewHolder(view);
-            }
-
+        return new ViewHolder(view);
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-            if(Flag_true){
+        final Beer itemBeer = mFilteredbeerList.get(position);
+        //Read list data for check os favorites item
+        readCursorData(itemBeer,holder);
 
-                final Beer itemBeer = mFilteredbeerList.get(position);
-                //Read list data for check os favorites item
-                readCursorData(itemBeer,holder);
+        holder.textName.setText(itemBeer.getName());
+        holder.textTagline.setText(itemBeer.getTagline());
 
-                holder.textName.setText(itemBeer.getName());
-                holder.textTagline.setText(itemBeer.getTagline());
+        //Implementation of load image with the API (https://github.com/bumptech/glide)
+        Glide.with(context)
+                .load(itemBeer.getImageUrl())
+                .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
+                .into(holder.imageView);
 
-                //Implementation of load image with the API (https://github.com/bumptech/glide)
-                Glide.with(context)
-                        .load(itemBeer.getImageUrl())
-                        .apply(RequestOptions.placeholderOf(R.drawable.placeholder))
-                        .into(holder.imageView);
-
-                //Fix bug RecyclerView adapter showing wrong images in button when use Filter
-                holder.setIsRecyclable(false);
-            }
+        //Fix bug RecyclerView adapter showing wrong images in button when use Filter
+        holder.setIsRecyclable(false);
 
     }
 
@@ -177,7 +164,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             textTagline = itemView.findViewById(R.id.textTagline);
             favBtn = itemView.findViewById(R.id.imageButtonFavorite);
 
-            if(Flag_true){
             //Button to favorite list item
             favBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -214,7 +200,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
                 itemView.setOnClickListener(this);
-            }
         }
 
         @Override
